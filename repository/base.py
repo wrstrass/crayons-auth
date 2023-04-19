@@ -1,13 +1,11 @@
-from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db import get_session
 from models import BaseModel
 
 
 class BaseRepository:
-    def __init__(self, Model: BaseModel, session: AsyncSession = Depends(get_session)):
+    def __init__(self, Model: BaseModel, session: AsyncSession):
         self.Model = Model
         self._session = session
 
