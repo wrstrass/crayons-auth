@@ -3,6 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+PREFIX = "/api/v1/auth"
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 DB = os.getenv("DB")

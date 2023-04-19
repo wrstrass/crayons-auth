@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
+
+from config import PREFIX
 from db import sql_engine
 from models import Base
-
-PREFIX = "/api/v1/auth"
+from views import router
 
 
 app = FastAPI(
@@ -19,8 +20,4 @@ async def setup():
         await conn.run_sync(Base.metadata.create_all)
 
 
-@app.post(f"{PREFIX}/register/")
-async def register(req: Request):
-    req = await req.json()
-    print(req)
-    return req
+app.include_router(router)
