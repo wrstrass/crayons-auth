@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 DB = os.getenv("DB")
 DB_DRIVER = os.getenv("DB_DRIVER")
 DB_USER = os.getenv("DB_USER")
