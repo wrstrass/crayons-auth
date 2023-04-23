@@ -1,1 +1,1 @@
-from services.auth import RegisterService
+from services.auth import RegisterService, LoginService
