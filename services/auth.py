@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 from repository import NotUniqueValue, UserRepository, RefreshTokenRepository
 from schemas import AuthSchema
-from models import User, RefreshToken
+from models import User
 from utils import hash_password, verify_password, JWTToken
 from exceptions import HTTP_403, HTTP_404
 
@@ -41,19 +41,9 @@ class LoginService:
         if not verify_password(auth.password, user.password):
             raise HTTP_403(detail="Wrong Password")
         else:
-            try:
-                refresh_token = await self.refresh_token_repository.get((RefreshToken.user_id == user.id,))
-                print(refresh_token)
-            except NotUniqueValue:
-                refresh_token = RefreshToken(
-                    user_id = user.id,
-                )
-
-            jwt_token = JWTToken(user.id)
-            refresh_token.created_at = jwt_token.created_at
-            await self.refresh_token_repository.update(refresh_token)
+            refresh_token = await self.refresh_token_repository.issue(user.id)
 
             response = JSONResponse(content={})
-            response.set_cookie("access", jwt_token.encode())
-            response.set_cookie("refresh", JWTToken(user.id).encode())
+            response.set_cookie("access", JWTToken(user.id).encode())
+            response.set_cookie("refresh", JWTToken.from_orm(refresh_token).encode())
             return response

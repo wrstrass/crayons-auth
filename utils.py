@@ -1,6 +1,8 @@
 from datetime import datetime
 import jwt
 from passlib.context import CryptContext
+
+from models import RefreshToken
 from config import SECRET_KEY
 
 
@@ -26,6 +28,13 @@ class JWTToken:
         if type(created_at) != datetime:
             created_at = datetime.now()
         self.created_at = created_at
+
+    @classmethod
+    def from_orm(cls, model: RefreshToken) -> "JWTToken":
+        return JWTToken(
+            model.user_id,
+            model.created_at,
+        )
 
     def encode(self) -> str:
         return jwt.encode(
