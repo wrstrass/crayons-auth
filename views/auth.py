@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Header
 
-from schemas import AuthSchema
+from dependencies import authenticate
+from models import User
+from schemas import AuthSchema, UserSchema
 from services import RegisterService, LoginService, TokensService
 
 
@@ -17,3 +19,7 @@ async def login(auth: AuthSchema, service: LoginService = Depends(LoginService))
 @router.get("/tokens")
 async def tokens(refresh_token: str = Header(), service: TokensService = Depends(TokensService)):
     return await service.tokens(refresh_token)
+
+@router.get("/me")
+async def me(user: User = Depends(authenticate)):
+    return UserSchema.from_orm(user)
