@@ -7,6 +7,8 @@ load_dotenv()
 PREFIX = "/api/v1/auth"
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+JWT_ACCESS_EXPIRE_TIME = int(os.getenv("JWT_ACCESS_EXPIRE_TIME"))
+JWT_REFRESH_EXPIRE_TIME = int(os.getenv("JWT_REFRESH_EXPIRE_TIME"))
 
 DB = os.getenv("DB")
 DB_DRIVER = os.getenv("DB_DRIVER")

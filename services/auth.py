@@ -1,11 +1,13 @@
+from datetime import datetime, timedelta
 from fastapi import Depends
 from fastapi.responses import JSONResponse
 
 from repository import NotUniqueValue, UserRepository, RefreshTokenRepository
 from schemas import AuthSchema
-from models import User
+from models import User, RefreshToken
 from utils import hash_password, verify_password, JWTToken
-from exceptions import HTTP_403, HTTP_404
+from exceptions import HTTP_401, HTTP_403, HTTP_404
+from config import JWT_REFRESH_EXPIRE_TIME
 
 
 class RegisterService:
@@ -47,3 +49,32 @@ class LoginService:
             response.set_cookie("access", JWTToken(user.id).encode())
             response.set_cookie("refresh", JWTToken.from_orm(refresh_token).encode())
             return response
+
+
+class TokensService:
+    def __init__(
+        self,
+        repository: RefreshTokenRepository = Depends(RefreshTokenRepository),
+    ) -> None:
+        self.repository = repository
+
+    async def tokens(self, refresh_token: str) -> JSONResponse:
+        jwt_token = JWTToken.decode(refresh_token)
+        if jwt_token.created_at + timedelta(minutes=JWT_REFRESH_EXPIRE_TIME) < datetime.now():
+            raise HTTP_401(detail="Refresh Token expired")
+
+        try:
+            token = await self.repository.get((
+                RefreshToken.user_id == jwt_token.user_id,
+                RefreshToken.created_at == jwt_token.created_at,
+            ))
+        except NotUniqueValue:
+            raise HTTP_401()
+
+        token.created_at = datetime.now()
+        await self.repository.update(token)
+
+        response = JSONResponse(content={})
+        response.set_cookie("access", JWTToken(token.user_id).encode())
+        response.set_cookie("refresh", JWTToken.from_orm(token).encode())
+        return response

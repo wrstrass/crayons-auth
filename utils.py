@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 
 from models import RefreshToken
 from config import SECRET_KEY
+from exceptions import HTTP_401
 
 
 password_context = CryptContext(
@@ -39,7 +40,7 @@ class JWTToken:
     def encode(self) -> str:
         return jwt.encode(
             {
-                "id": self.user_id,
+                "user_id": self.user_id,
                 "created_at": self.created_at.timestamp(),
             },
             SECRET_KEY,
@@ -48,5 +49,9 @@ class JWTToken:
 
     @staticmethod
     def decode(token: str) -> "JWTToken":
-        token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return JWTToken(token.user_id, datetime.fromtimestamp(token.created_at))
+        try:
+            token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        except jwt.DecodeError:
+            raise HTTP_401(detail="Invalid JWT")
+        token["created_at"] = datetime.fromtimestamp(token["created_at"])
+        return JWTToken(**token)
