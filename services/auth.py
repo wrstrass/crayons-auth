@@ -20,7 +20,7 @@ class RegisterService:
 
         try:
             user = await self._user_repository.update(user)
-            return user.id
+            return {}
         except Exception as exc:
             raise HTTP_403(detail=str(exc))
 
