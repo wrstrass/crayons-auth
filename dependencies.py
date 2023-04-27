@@ -19,6 +19,6 @@ async def authenticate(
     try:
         user = await user_repository.get((User.id == jwt_token.user_id,))
     except NotUniqueValue:
-        raise HTTP_404()
+        raise HTTP_401(detail="User Not Found")
 
     return user
