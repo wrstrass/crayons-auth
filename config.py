@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-PREFIX = "/api/v1/auth"
+PREFIX = "/api/v1"
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 JWT_ACCESS_EXPIRE_TIME = int(os.getenv("JWT_ACCESS_EXPIRE_TIME"))

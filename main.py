@@ -7,9 +7,9 @@ from views import router
 
 
 app = FastAPI(
-    docs_url=f"{PREFIX}/docs/",
-    redoc_url=f"{PREFIX}/redoc/",
-    openapi_url=f"{PREFIX}/openapi.json",
+    docs_url=f"{PREFIX}/auth/docs/",
+    redoc_url=f"{PREFIX}/auth/redoc/",
+    openapi_url=f"{PREFIX}/auth/openapi.json",
 )
 
 
