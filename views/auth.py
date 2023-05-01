@@ -6,7 +6,7 @@ from schemas import AuthSchema, UserSchema
 from services import RegisterService, LoginService, TokensService
 
 
-router = APIRouter()
+router = APIRouter(prefix="/auth")
 
 @router.post(f"/register")
 async def register(auth: AuthSchema, service: RegisterService = Depends(RegisterService)):
